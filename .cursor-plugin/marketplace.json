@@ -452,6 +452,11 @@
         "grokbot": "0.52.0",
         "sand": "0.52.0"
       }
+    },
+    {
+      "name": "limacharlie",
+      "source": "third_party/limacharlie",
+      "description": "Hunt threats, triage detections and cases, build and test detection rules, and investigate or contain endpoints in LimaCharlie. Read-only by default; every change needs your approval."
     }
   ]
 }
