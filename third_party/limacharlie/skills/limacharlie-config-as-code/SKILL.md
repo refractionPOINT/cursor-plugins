@@ -28,6 +28,7 @@ limacharlie --oid <OID> sync pull --config-file /workspace/limacharlie/<org>/org
 - `--outputs`: destination tokens and passwords
 - `--org-values`: third-party API keys
 - `--hive-cloud-sensor`, `--hive-external-adapter`, `--hive-extension-config`: adapter and extension configs, which can embed API keys
+- `--yara`, `--hive-yara`: YARA sources, whose locators can embed access tokens
 - `--all`: includes all of the above
 
 Files on the Bot computer are visible to every Bot on the account, so treat pulling any of these as reading a credential. Use them only with approval, delete the file when the task is done, and never commit it to a repository or share it.

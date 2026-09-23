@@ -39,7 +39,7 @@ respond:
 - **Responses**: `report`, `add tag` (with optional `ttl`), `task`, `isolate network`, `output`. Any action can take a `suppression:` block to limit how often it fires.
 - **Reference**: https://docs.limacharlie.io/3-detection-response/
 
-**Response actions have side effects.** A rule that uses `task`, `isolate network` or `add tag` acts on every matching host automatically, with nobody asking first. Default to `report` only. Propose automated containment as a separate change, name the hosts it could affect, and deploy it only when the user asks for it by name and approves.
+**Response actions have side effects.** Every response action other than `report` (for example `task`, `isolate network`, `rejoin network`, `seal`, `add tag`, `add var`, `output`, `extension request` or `start ai agent`) acts automatically on every match, with nobody asking first. Default to `report` only. Propose automated containment as a separate change, name the hosts it could affect, and deploy it only when the user asks for it by name and approves.
 
 ## Workflow
 
@@ -84,7 +84,7 @@ rules:
     case sensitive: false
 ```
 
-Keep FP rules narrow: one rule name plus the specific benign attributes, never a whole rule or a whole host. Show the user which recent detections the rule would suppress, and a closely related malicious variant that would still fire. Deploy with `set_fp_rule` (`rule_name`, `rule_content`) after approval, then read it back with `get_fp_rule`.
+Keep FP rules narrow: one rule name plus the specific benign attributes, never a whole rule or a whole host. Show the user which recent detections the rule would suppress, and a closely related malicious variant that would still fire. Deploy with `set_fp_rule` after approval: `rule_name`, plus `rule_content` with the rule under a `detect` key (`{"detect": {"op": "and", "rules": [...]}}`). Then read it back with `get_fp_rule`.
 
 ## Disabling and deleting
 

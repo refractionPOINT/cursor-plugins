@@ -7,9 +7,13 @@ It verifies that:
   1. every tool in the read-only connection's X-MCP-Tools allowlist exists on
      the server (the server rejects the whole list if one name is unknown,
      which would take the read-only connection down);
-  2. the allowlist contains no tool that changes state or returns
-     credentials;
-  3. every tool or parameter name the skills mention exists on the server.
+  2. the allowlist matches the reviewed read-only set in
+     scripts/reviewed_tools.json, and every tool on the server has been
+     reviewed (classified read_only or excluded), so a new server tool can
+     never slip onto the read-only connection unreviewed;
+  3. the allowlist contains no tool whose name marks it as a write, a
+     credential read, a URL fetch or a file write (a second, name-based net);
+  4. every tool or parameter name the skills mention exists on the server.
 
 Only `tools/list` is called, which needs no credentials and changes nothing.
 """
@@ -38,6 +42,9 @@ FORBIDDEN_PATTERNS = [
     r"^get_secret$", r"installation_key", r"^list_outputs$", r"^get_org_value$",
     r"^(get|list)_(cloud_sensors?|external_adapters?|extension_configs?)$",
     r"^get_extension_config$", r"^(get_rule|list_rules)$",
+    # URL fetches, file writes, stored ARLs and other agents' histories.
+    r"^resolve_arl$", r"^get_payload$", r"^yara_scan_", r"^(get|list)_yara_(sources?|rules?)$",
+    r"^(get|list)_ai_(chat|session)", r"^request_feedback_",
 ]
 
 
@@ -63,6 +70,18 @@ def main() -> int:
     allowlist = [t.strip() for t in server["headers"]["X-MCP-Tools"].split(",") if t.strip()]
     available, parameters = live_tools(server["url"])
     errors = []
+
+    reviewed = json.loads((PLUGIN_ROOT / "scripts" / "reviewed_tools.json").read_text())
+    reviewed_read_only = set(reviewed["read_only"])
+    if set(allowlist) != reviewed_read_only:
+        errors.append(
+            "X-MCP-Tools does not match reviewed read_only: "
+            f"extra={sorted(set(allowlist) - reviewed_read_only)} "
+            f"missing={sorted(reviewed_read_only - set(allowlist))}"
+        )
+    unreviewed = sorted(available - reviewed_read_only - set(reviewed["excluded"]))
+    if unreviewed:
+        errors.append(f"new server tools to classify in reviewed_tools.json: {unreviewed}")
 
     unknown = sorted(set(allowlist) - available)
     if unknown:
