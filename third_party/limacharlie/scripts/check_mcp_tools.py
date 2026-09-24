@@ -13,7 +13,9 @@ It verifies that:
      never slip onto the read-only connection unreviewed;
   3. the allowlist contains no tool whose name marks it as a write, a
      credential read, a URL fetch or a file write (a second, name-based net);
-  4. every tool or parameter name the skills mention exists on the server.
+  4. every tool or parameter name the skills mention exists on the server;
+  5. every connection has its own URL (Grok Bot and Cursor keep only one
+     connection per URL, so a shared one silently drops the other).
 
 Only `tools/list` is called, which needs no credentials and changes nothing.
 """
@@ -70,6 +72,10 @@ def main() -> int:
     allowlist = [t.strip() for t in server["headers"]["X-MCP-Tools"].split(",") if t.strip()]
     available, parameters = live_tools(server["url"])
     errors = []
+
+    urls = [c["url"] for c in config.values()]
+    if len(urls) != len(set(urls)):
+        errors.append(f"connections share a URL, so clients will drop one of them: {urls}")
 
     reviewed = json.loads((PLUGIN_ROOT / "scripts" / "reviewed_tools.json").read_text())
     reviewed_read_only = set(reviewed["read_only"])

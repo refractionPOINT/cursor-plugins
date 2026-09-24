@@ -17,12 +17,12 @@ Hunt threats across telemetry, triage detections and cases, build and test detec
 
 ## Connections
 
-The plugin adds two connections to the same MCP server:
+The plugin adds two connections to the same MCP server, each at its own address:
 
-| Connection | Access |
-| --- | --- |
-| `limacharlie` | **Read-only.** The plugin sends the server a fixed list of 176 read-only tools in the `X-MCP-Tools` header. The server lists only those tools and refuses a call to any other tool on this connection. |
-| `limacharlie-actions` | **Full access**: isolation, sensor tasking, rule deployment, configuration changes and credential reads. The skills use it only after you approve the specific action. |
+| Connection | Address | Access |
+| --- | --- | --- |
+| `limacharlie` | `https://mcp.limacharlie.io/mcp` | **Read-only.** The plugin sends the server a fixed list of 176 read-only tools in the `X-MCP-Tools` header. The server lists only those tools and refuses a call to any other tool on this connection. |
+| `limacharlie-actions` | `https://mcp.limacharlie.io/mcp/all` | **Full access**: isolation, sensor tasking, rule deployment, configuration changes and credential reads. The skills use it only after you approve the specific action. |
 
 To keep a team read-only, block `limacharlie-actions` in your team's MCP policy. The skills then describe changes for a person to make in the LimaCharlie web app instead of making them.
 
@@ -77,11 +77,13 @@ Routines only read and report. When a routine finds something that needs action,
 
 | Endpoint | Used for |
 | --- | --- |
-| `https://mcp.limacharlie.io/mcp` | MCP server (both connections) |
+| `https://mcp.limacharlie.io/mcp`, `https://mcp.limacharlie.io/mcp/all` | MCP server (read-only and actions connections) |
 | `https://mcp.limacharlie.io/.well-known/*`, `/authorize`, `/token`, `/register` | OAuth 2.1 discovery, dynamic client registration and token exchange |
 | `https://api.limacharlie.io`, `https://jwt.limacharlie.io` | LimaCharlie API, used by the MCP server and the optional CLI |
 
 ## Maintaining the read-only list
+
+The two connections must keep separate addresses: Grok Bot and Cursor keep only one connection per URL. `/mcp/all` serves the same full tool set as `/mcp`.
 
 The server rejects the whole `X-MCP-Tools` list if it names a tool the server does not have. `scripts/reviewed_tools.json` classifies every tool on the server as `read_only` or `excluded`. Before every release, run:
 
