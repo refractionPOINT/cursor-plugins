@@ -21,7 +21,7 @@ The plugin adds two connections to the same MCP server, each at its own address:
 
 | Connection | Address | Access |
 | --- | --- | --- |
-| `limacharlie` | `https://mcp.limacharlie.io/mcp` | **Read-only.** The plugin sends the server a fixed list of 176 read-only tools in the `X-MCP-Tools` header. The server lists only those tools and refuses a call to any other tool on this connection. |
+| `limacharlie` | `https://mcp.limacharlie.io/mcp` | **Read-only.** The plugin sends the server a fixed list of 185 read-only tools in the `X-MCP-Tools` header. The server lists only those tools and refuses a call to any other tool on this connection. |
 | `limacharlie-actions` | `https://mcp.limacharlie.io/mcp/all` | **Full access**: isolation, sensor tasking, rule deployment, configuration changes and credential reads. The skills use it only after you approve the specific action. |
 
 To keep a team read-only, block `limacharlie-actions` in your team's MCP policy. The skills then describe changes for a person to make in the LimaCharlie web app instead of making them.

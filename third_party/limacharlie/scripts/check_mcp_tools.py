@@ -39,7 +39,7 @@ FORBIDDEN_PATTERNS = [
     r"^reliable_tasking$", r"^memory_dump_sensor$", r"^extension_request$",
     r"^lc_call_tool$", r"^replay_dr_rule$", r"^collect_velociraptor_artifact$",
     r"^vulnerability_(scan|set_|bulk_|reset_)",
-    r"^cloudsec_(set_|bulk_|dismiss_|restore_|ingest_|test_|code_scan|code_autofix|code_provenance_push)",
+    r"^cloudsec_(set_|bulk_|dismiss_|restore_|ingest_|test_|code_scan|code_autofix|code_provenance_push|create_remediation|decide_remediation)",
     # Reads that return credentials or configs that can embed them.
     r"^get_secret$", r"installation_key", r"^list_outputs$", r"^get_org_value$",
     r"^(get|list)_(cloud_sensors?|external_adapters?|extension_configs?)$",
